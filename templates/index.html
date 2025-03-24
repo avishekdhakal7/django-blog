@@ -1,0 +1,210 @@
+<!DOCTYPE html>  
+<html lang="en">  
+
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Hotel Habibi - Ordering System</title>  
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">  
+    <style>  
+        body {  
+            background-color:rgb(111, 142, 172);  
+        }  
+
+        .hero {  
+            background: url('https://source.unsplash.com/1600x900/?hotel') no-repeat center center;  
+            background-size: cover;  
+            height: 60vh;  
+            color: white;  
+            display: flex;  
+            align-items: center;  
+            justify-content: center;  
+            text-align: center;  
+        }  
+
+        .food-item {  
+            border: 1px solid #ccc;  
+            padding: 10px;  
+            margin-bottom: 20px;  
+            border-radius: 5px;  
+            background: white;  
+            transition: transform 0.2s;  
+        }  
+
+        .food-item:hover {  
+            transform: scale(1.05);  
+        }  
+    </style> 
+
+</head>  
+
+<body> 
+  {%if user.is_authenticated%}
+    <nav class="navbar navbar-expand-lg navbar-light bg-primary">  
+
+        <a class="navbar-brand" href="#">Welcome  {{user.username}} To Hotel Habibi</a>  
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">  
+            <span class="navbar-toggler-icon"></span>  
+        </button> 
+
+
+        <div class="collapse navbar-collapse" id="navbarNav">  
+
+            <ul class="navbar-nav ml-auto">  
+                <li class="nav-item">  
+                    <a class="nav-link" href="#menu">Menu</a>  
+                </li>  
+
+                <li class="nav-item">  
+                    <a class="nav-link" href="#contact">Contact</a>  
+                </li>  
+ 
+                    <li class="nav-item">  
+                        <a class="nav-link btn btn-primary" href="#" id="cartLink">Cart <span class="badge badge-light" id="cartCount">0</span></a>  
+                    </li> 
+                    <li class="nav-item">
+                        {% if user.is_superuser %}  
+                        <a class="nav-link btn btn-success" href=" post ">POST</a>  
+                    </li> {% endif%} 
+                    <li class="nav-item">  
+                    <a class="nav-link btn btn-danger" href="{% url 'logout' %}">Log Out</a>  
+                </li>  
+            </ul> 
+        </div>
+            </nav> 
+
+             
+                    
+            {% endif %} 
+
+            {%if not user.is_authenticated%}
+
+                    <nav class="navbar navbar-expand-lg navbar-light bg-primary">  
+                        <a class="navbar-brand" href="#">Hotel Habibi</a>  
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">  
+                            <span class="navbar-toggler-icon"></span>  
+                        </button> 
+                
+                        <div class="collapse navbar-collapse" id="navbarNav">  
+                
+                            <ul class="navbar-nav ml-auto"> 
+
+                                <li class="nav-item">  
+                                    <a class="nav-link" href="#menu">Menu</a>  
+                                </li>  
+                 
+                
+              
+                <li class="nav-item">  
+                    <a class="nav-link btn btn-success" href="{% url 'login' %}">Login</a>  
+                </li> 
+
+                <li class="nav-item">  
+                    <a class="nav-link btn btn-warning" href="{% url 'register' %}">Register</a>  
+                </li>  
+            </ul>  
+        </div> 
+            </nav>
+                     
+            {% endif %} 
+            
+        
+    
+  
+
+    <div class="hero">  
+        <div class="hero-content">  
+            <h1>Welcome to Hotel Habibi</h1>  
+            <p>Your comfort is our priority</p>  
+        </div>  
+    </div>  
+    <div class="container mt-5">  
+        <h2 id="menu" class="text-center mb-4">Our Menu</h2>  
+        <div class="row" id="menuItems">  
+            <!-- Dynamic menu items will be inserted here -->  
+            
+            {% for product in products %}
+            <div class="col-md-4">
+              <div class="card">
+                <img src="{{product.image.url}}" class="card-img-top" alt="veg-momo">
+                <div class="card-body">
+                  <h5 class="card-title">{{product.title}} </h5>
+                  <p class="card-text">{{product.description}}</p>
+                  <a  class="btn btn-primary">NPR.{{product.price}}</a>
+                 {% if user.is_superuser %} <a href="/delete/{{product.id}}" class="btn btn-danger">Delete</a>{% endif %}
+                 {% if user.is_superuser %} <a href="/edit/{{product.id}}" class="btn btn-warning">Edit</a>{% endif %}
+                  <small class='container '>Post At: {{product.date}}</small>
+                </div>
+              </div>
+            </div>
+
+            {% endfor %}
+            
+
+        {% if user.is_authenticated %}
+
+        <h2 id="contact" class="text-center mt-5">Contact Us</h2>
+        {% for message in messages %}
+        <h5 class="text-danger">{{message}}</h5>
+      {% endfor %}
+
+      <div class="container">
+        <form action="{% url 'contact' %} " method="POST" class="php-email-form" >  
+            {% csrf_token %}  
+            <div class="col-12">  
+                    <input type="text" name="name" class="form-control" placeholder="Your Name" required>  
+                </div>  
+                <div class="col-12">  
+                    <input type="email" class="form-control" name="email" placeholder="Your Email" required>  
+                </div>  
+                <div class="col-12">  
+                    <input type="text" class="form-control" name="subject" placeholder="Subject" required>  
+                </div>  
+                <div class="col-12">  
+                    <textarea class="form-control" name="message" rows="6" placeholder="Message" required></textarea>  
+                </div >  
+                <div class="container d-flex justify-content-center" >
+                <button type="submit" class="btn btn-primary ">Send Message</button>  
+                </div>
+        </form>
+    </div> 
+        {%endif %}
+
+        {% if not user.is_authenticated %}
+        
+        <h5 id="contact" class="text-center mt-1 text-danger">Please Login or Register to Contact Us</h5>
+        {%endif%}
+    </div>  
+
+    <script>  
+        // JavaScript to fetch and display menu items dynamically  
+        fetch('/api/menu/')  
+            .then(response => response.json())  
+            .then(menuItems => {  
+                const menuContainer = document.getElementById('menuItems');  
+                menuItems.forEach(item => {  
+                    const foodItemDiv = document.createElement('div');  
+                    foodItemDiv.className = 'col-md-4 food-item';  
+                    foodItemDiv.innerHTML = `  
+                        <h5>${item.name}</h5>  
+                        <p>${item.description}</p>  
+                        <p><strong>Price: $${item.price}</strong></p>  
+                        <button class="btn btn-primary" onclick="addToCart('${item.id}')">Add to Cart</button>  
+                    `;  
+                    menuContainer.appendChild(foodItemDiv);  
+                });  
+            });  
+
+        function addToCart(itemId) {  
+            // Logic to add the item to the cart and update the cart count goes here  
+            const cartCount = document.getElementById('cartCount');  
+            cartCount.textContent = parseInt(cartCount.textContent) + 1;  
+        }  
+    </script>  
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>  
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>  
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>  
+</body>  
+
+</html>
