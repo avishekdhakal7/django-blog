@@ -1,7 +1,7 @@
 from django.test import TestCase
 
-import random
-import string
+# import random
+# import string
 
 # password_otp=(random.sample(string.digits,4))
 # computer_otp=("".join(password_otp))
