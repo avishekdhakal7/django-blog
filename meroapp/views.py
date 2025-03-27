@@ -240,6 +240,7 @@ def pendingpostdel(request,id):
     pendingpost.delete()
     messages.info(request,"succesfully deleted without posting !")
     return redirect('/')
+
 def pendingpostapprove(request,id):
     pendingpost=PendingPost.objects.get(id=id)
     user=User.objects.get(username=pendingpost.postby)
