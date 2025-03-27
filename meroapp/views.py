@@ -17,9 +17,9 @@ from .models import *
 
 
 def index(request):
-    products=Product.objects.all()
+    approvedposts=ApprovedPost.objects.all().order_by('-date') 
     
-    return render (request,"index.html",{'products':products} )
+    return render (request,"index.html",{'approvedposts':approvedposts} )
 
 
 def contact(request):
@@ -211,52 +211,88 @@ def post(request):
     if request.method =="POST":
         title = request.POST.get('title')  # Use get to avoid MultiValueDictKeyError  
         image = request.FILES.get('image')  # Use get to avoid MultiValueDictKeyError  
-        description = request.POST.get('description')  # Use get to avoid MultiValueDictKeyError  
-        price = request.POST.get('price')  # Use get to avoid MultiValueDictKeyError  
+        description = request.POST.get('description')  # Use get to avoid MultiValueDictKeyError   
         postby = request.POST.get('postby')  # Use get to avoid MultiValueDictKeyError  
-
-        
-        if title and image:
-            products = Product(title=title, image=image,description=description,price=price,postby=postby)  
-            products.save() ;
             
-            messages.info(request, "Sucessfully Added")
-            return redirect('/')
+        if title and description:
+            if request.user.is_superuser:
+                approvedpost = ApprovedPost(title=title, image=image,description=description,postby=postby)  
+                approvedpost.save() ;
+                messages.info(request, "Sucessfully Added")
+                return redirect('/')
+            
+            else:
+                pendingpost = PendingPost(title=title, image=image,description=description,postby=postby)  
+                pendingpost.save() ;
+                messages.info(request, "Sucessfully Added! wait for admins approval")
+                return redirect('/')
         
     else:  
-     return render(request,"upload_form.html")
+     return render(request,"post.html")
+ 
+def pendingpost(request):
+    pendingposts=PendingPost.objects.all() 
+    return render(request,"pendingpost.html",{'pendingposts':pendingposts})
+
+
+def pendingpostdel(request,id):
+    pendingpost=PendingPost.objects.get(id=id)
+    pendingpost.delete()
+    messages.info(request,"succesfully deleted without posting !")
+    return redirect('/')
+def pendingpostapprove(request,id):
+    pendingpost=PendingPost.objects.get(id=id)
+    user=User.objects.get(username=pendingpost.postby)
+    
+    title=pendingpost.title
+    image=pendingpost.image
+    description=pendingpost.description
+    postby=pendingpost.postby
+    date=pendingpost.date
+    
+    approvedpost = ApprovedPost(title=title, image=image,date=date,description=description,postby=postby)
+    approvedpost.save();
+    pendingpost.delete();
+    messages.info(request,f"succesfully Provided approval for {postby}'s post  !")
+    messages.info(request,"And sent a notification via Email")
+    
+    subject= "Apporval of post at BLOG page"    #sending a message of post approval
+    message=f"Your post at BLOG page.Posted at{pendingpost.date} has been approved by the admin just now!"  
+    from_mail=settings.EMAIL_HOST_USER
+    recipient=[user.email,] 
+    send_mail(subject, message, from_mail, recipient, fail_silently=False)    
+    return redirect('/')
+  
 
   
 def delete(request,id):
-    product=Product.objects.get(id=id)
-    product.delete()
+    approvedpost=ApprovedPost.objects.get(id=id)
+    approvedpost.delete()
     messages.info(request,"succesfully deleted !")
     return redirect('/')
 
 def edit(request,id):
-    products=Product.objects.all()
-    for product in products:
-        product
+    approvedposts=ApprovedPost.objects.all()
+    for approvedpost in approvedposts:
+        approvedpost
         
         if request.method =="POST":
-            product=Product.objects.get(id=id)
+            approvedpost=ApprovedPost.objects.get(id=id)
             
             title = request.POST.get('title')  # Use get to avoid MultiValueDictKeyError  
             image = request.FILES.get('image')  # Use get to avoid MultiValueDictKeyError  
             description = request.POST.get('description')  # Use get to avoid MultiValueDictKeyError  
-            price = request.POST.get('price')  # Use get to avoid MultiValueDictKeyError  
             
-            product.title=title
-            product.image=image
-            product.description=description
-            product.price=price
+            approvedpost.title=title
+            approvedpost.image=image
+            approvedpost.description=description
             
-            product.save();
+            approvedpost.save();
             messages.info(request,"succesfully edited item !")
             
             return redirect('/')
         
-    return render(request,'edit.html',{'product':product})
+    return render(request,'edit.html',{'approvedpost':approvedpost})
 
 
         

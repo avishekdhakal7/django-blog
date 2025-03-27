@@ -16,25 +16,22 @@
 
 
 
-      <form action="/edit/{{product.id}}/" method="POST" class="bg-white p-3 rounded shadow-lg" style="width: 300px;" enctype="multipart/form-data">
+      <form action="/edit/{{approvedpost.id}}/" method="POST" class="bg-white p-3 rounded shadow-lg" style="width: 300px;" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="mb-3">
 
           <label for="title" class="form-label">Title</label>
-          <input type="text" class="form-control" id="title" name="title" value='{{product.title}}' required>
+          <input type="text" class="form-control" id="title" name="title" value='{{approvedpost.title}}' required>
         </div>
         <div class="mb-3">
           <label for="image" class="form-label">Image</label>
-          <input type="file" class="form-control" id="image" name="image" accept="image/*" required value='{{product.image.url}}'>
+          <input type="file" class="form-control" id="image" name="image" accept="image/*" required value='{{approvedpost.image.url}}'>
         </div>
         <div class="mb-3">
           <label for="description" class="form-label">Description</label>
-          <input type="text" class="form-control" id="description" name="description" value='{{product.description}}'>
+          <input type="text" class="form-control" id="description" name="description" value='{{approvedpost.description}}'>
         </div>
-        <div class="mb-3">
-          <label for="price" class="form-label">Price</label>
-          <input type="text" class="form-control" id="price" name="price"  value='{{product.price}}' required >
-        </div>
+        
         <button type="submit" class="btn btn-primary w-100">Edit</button>
       </form>
       

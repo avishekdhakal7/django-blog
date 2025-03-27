@@ -19,6 +19,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -82,6 +83,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'meroproject.wsgi.application'
 
 
+
+
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
@@ -134,12 +137,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATIC_URL = 'static/'
 
+STATTICFILES_DIRS=(os.path.join(BASE_DIR,'static'),)   #this is tuple with a single element 
+
 MEDIA_ROOT=os.path.join(BASE_DIR, 'media')
 
 MEDIA_URL= '/media/'
-
-STATTICFILES_DIRS=(
-    os.path.join(BASE_DIR/'static'),
-)
-
 

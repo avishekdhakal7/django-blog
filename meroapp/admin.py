@@ -1,8 +1,11 @@
 from django.contrib import admin
-from .models import Product
+from .models import ApprovedPost , PendingPost
 
-@admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
-    list_display=['id','title','image','date','description','price','postby']
+@admin.register(ApprovedPost)
+class ApprovedPostAdmin(admin.ModelAdmin):
+    list_display=['id','title','image','date','description','postby']
 
-# Register your models here.
+@admin.register(PendingPost)
+class PendingPostAdmin(admin.ModelAdmin):
+    list_display=['id','title','image','date','description','postby']
+

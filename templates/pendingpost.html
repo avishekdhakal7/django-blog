@@ -1,0 +1,47 @@
+{% if user.is_superuser %}  
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Pending Posts</title>  
+   
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">  
+</head>  
+<body>  
+    {% include 'navbar.html' %} 
+
+    <div class="container mt-4">  
+        <h1 class="text-center">Pending Posts</h1>  
+        <div class="row">  
+            {% for pendingpost in pendingposts %}  
+                <div class="col-md-4 col-sm-6 mb-4">  
+                    <div class="card h-100">    
+                        <img src="{{ pendingpost.image.url }}" class="card-img-top" alt="{{ pendingpost.title }}">  
+                        <div class="card-body">  
+                            <h5 class="card-title">{{ pendingpost.title }}</h5>  
+                            <p class="card-text">{{ pendingpost.description }}</p>  
+                            
+                            <a href="{%url 'pendingpostapprove' pendingpost.id %}" class="btn btn-success">Approve</a>  
+                            <a href="{%url 'pendingpostdel' pendingpost.id %}" class="btn btn-danger">Decline</a>  
+
+                            <small class='container'>Post At: {{ pendingpost.date }}</small><br>  
+                            <small class='container'>Post By: {{ pendingpost.postby }}</small>  
+                        </div>  
+                    </div>  
+                </div>  
+            {% empty %}  
+                <div class="col-12">  
+                    <p class="text-center">No pending posts available.</p>  
+                </div>  
+            {% endfor %}  
+        </div>  
+    </div>  
+
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>  
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>  
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>  
+</body>  
+</html>  
+{% endif %}  

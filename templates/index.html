@@ -4,7 +4,7 @@
 <head>  
     <meta charset="UTF-8">  
     <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-    <title>Hotel Habibi - Ordering System</title>  
+    <title>Blog home</title>  
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">  
     <style>  
         body {  
@@ -43,31 +43,30 @@
   
     <div class="hero">  
         <div class="hero-content">  
-            <h1>Welcome to Hotel Habibi</h1>  
-            <p>Your comfort is our priority</p>  
+            <h1>Welcome To Our BLOG</h1>  
+            <p>You can share your thoughts here</p>  
         </div>  
     </div>  
     <div class="container mt-5">  
-        <h2 id="menu" class="text-center mb-4">Our Menu</h2>  
+        <h2 id="menu" class="text-center mb-4">You are free to read and share your thoughts</h2>  
         <div class="row" id="menuItems">  
             <!-- Dynamic menu items will be inserted here -->  
             
-            {% for product in products %}  
+            {% for approvedpost in approvedposts %}
             <div class="col-md-4">
               <div class="card">
-                <img src="{{product.image.url}}" class="card-img-top" alt="veg-momo">
+                <img src="{{approvedpost.image.url}}" class="card-img-top" alt="">
                 <div class="card-body">
-                  <h5 class="card-title">{{product.title}} </h5>
-                  <p class="card-text">{{product.description}}</p>
-                  <a  class="btn btn-primary">NPR.{{product.price}}</a>
-                 {% if user.is_superuser %} <a href="/delete/{{product.id}}" class="btn btn-danger">Delete</a>{% endif %}
-                 {% if user.is_authenticated and postby=={{user.username}}%} <a href="/edit/{{product.id}}" class="btn btn-warning">Edit</a>{% endif %}
-                  <small class='container '>Post At: {{product.date}}</small>
-                  <small class='container '>Post By: {{product.postby}}</small>
+                  <h5 class="card-title">{{approvedpost.title}} </h5>
+                  <p class="card-text">{{approvedpost.description}}</p>
+                  {% if user.is_superuser %} <a href="/delete/{{approvedpost.id}}" class="btn btn-danger">Delete</a>{% endif %}
+                 {% if user.is_superuser %} <a href="/edit/{{approvedpost.id}}" class="btn btn-warning">Edit</a>{% endif %}
+                  <small class='container '>Post At: {{approvedpost.date}}</small>
+                  <small class='container '>Post By: {{approvedpost.postby}}</small>
                 </div>
               </div>
             </div>
-
+          
           {% endfor %} 
             
         </div>
@@ -116,33 +115,7 @@
         
         <h5 id="contact" class="text-center mt-1 text-danger">Please Login or Register to Contact Us</h5>
         {%endif%}
-    </div>  
-
-    <script>  
-        // JavaScript to fetch and display menu items dynamically  
-        fetch('/api/menu/')  
-            .then(response => response.json())  
-            .then(menuItems => {  
-                const menuContainer = document.getElementById('menuItems');  
-                menuItems.forEach(item => {  
-                    const foodItemDiv = document.createElement('div');  
-                    foodItemDiv.className = 'col-md-4 food-item';  
-                    foodItemDiv.innerHTML = `  
-                        <h5>${item.name}</h5>  
-                        <p>${item.description}</p>  
-                        <p><strong>Price: $${item.price}</strong></p>  
-                        <button class="btn btn-primary" onclick="addToCart('${item.id}')">Add to Cart</button>  
-                    `;  
-                    menuContainer.appendChild(foodItemDiv);  
-                });  
-            });  
-
-        function addToCart(itemId) {  
-            // Logic to add the item to the cart and update the cart count goes here  
-            const cartCount = document.getElementById('cartCount');  
-            cartCount.textContent = parseInt(cartCount.textContent) + 1;  
-        }  
-    </script>  
+    </div>   
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>  
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>  

@@ -21,6 +21,8 @@
             placeholder="Enter your username"
             name="username"
             required
+            pattern="^[a-zA-Z0-9_]{3,20}$"
+            title="Username should be 3-20 characters long and can only contain letters, numbers, and underscores."
           />
         </div>
         <div class="mb-3">
@@ -30,6 +32,8 @@
             placeholder="Enter your email"
             name="email"
             required
+            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+            title="Please enter a valid email address."
           />
         </div>
         <div class="mb-3">
