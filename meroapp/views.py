@@ -18,13 +18,15 @@ from .models import *
 
 def index(request):
     products=Product.objects.all()
+    
     return render (request,"index.html",{'products':products} )
 
 
 def contact(request):
     if request.method=="POST":
-        name=request.POST['name']
-        subject=f"You got a message from {name} || SUBJECT: {request.POST['subject']}"
+        username=request.POST['username']
+        email=request.POST['email']
+        subject=f"You got a message from {username} < {email} >|| SUBJECT: {request.POST['subject']}"
         message=request.POST['message']
         from_mail= request.POST['email']
         recipient=[settings.EMAIL_HOST_USER,]
@@ -185,14 +187,17 @@ def confirmpassword(request,username):
     if request.method=="POST":
         
         username=request.session.get('username','')
-        # username=request.POST['username']       # above same name more than two iteration with render so creating conflict thats why i used session to hold data
-        user=User.objects.get(username=username)
+        # username=request.POST['username']       # above ,same name more than two iteration with render so creating conflict thats why i used session to hold data
+        user=User.objects.get(username=username)                # and session data is stored after confirming otp sent to the gmail
         password=request.POST['password']
         password2=request.POST['password2']
         
         if password==password2:
             user.set_password(password)
             user.save();
+            
+            del request.session['username']  
+            
             messages.info(request,"Sucessfully changed password login now !")
             return redirect('login')
         else:
@@ -202,58 +207,17 @@ def confirmpassword(request,username):
     return render (request,'confirmpassword.html',{'username':username})
     
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def post(request):
     if request.method =="POST":
         title = request.POST.get('title')  # Use get to avoid MultiValueDictKeyError  
         image = request.FILES.get('image')  # Use get to avoid MultiValueDictKeyError  
         description = request.POST.get('description')  # Use get to avoid MultiValueDictKeyError  
         price = request.POST.get('price')  # Use get to avoid MultiValueDictKeyError  
+        postby = request.POST.get('postby')  # Use get to avoid MultiValueDictKeyError  
 
         
         if title and image:
-            products = Product(title=title, image=image,description=description,price=price)  
+            products = Product(title=title, image=image,description=description,price=price,postby=postby)  
             products.save() ;
             
             messages.info(request, "Sucessfully Added")
@@ -266,6 +230,7 @@ def post(request):
 def delete(request,id):
     product=Product.objects.get(id=id)
     product.delete()
+    messages.info(request,"succesfully deleted !")
     return redirect('/')
 
 def edit(request,id):
@@ -287,6 +252,7 @@ def edit(request,id):
             product.price=price
             
             product.save();
+            messages.info(request,"succesfully edited item !")
             
             return redirect('/')
         

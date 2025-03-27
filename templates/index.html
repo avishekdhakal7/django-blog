@@ -34,84 +34,13 @@
         .food-item:hover {  
             transform: scale(1.05);  
         }  
+        .border-gradient {border: 5px solid; border-image: linear-gradient(to right, red, green, blue); border-image-slice: 1;} 
     </style> 
 
 </head>  
-
 <body> 
-  {%if user.is_authenticated%}
-    <nav class="navbar navbar-expand-lg navbar-light bg-primary">  
-
-        <a class="navbar-brand" href="#">Welcome  {{user.username}} To Hotel Habibi</a>  
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">  
-            <span class="navbar-toggler-icon"></span>  
-        </button> 
-
-
-        <div class="collapse navbar-collapse" id="navbarNav">  
-
-            <ul class="navbar-nav ml-auto">  
-                <li class="nav-item">  
-                    <a class="nav-link" href="#menu">Menu</a>  
-                </li>  
-
-                <li class="nav-item">  
-                    <a class="nav-link" href="#contact">Contact</a>  
-                </li>  
- 
-                    <li class="nav-item">  
-                        <a class="nav-link btn btn-primary" href="#" id="cartLink">Cart <span class="badge badge-light" id="cartCount">0</span></a>  
-                    </li> 
-                    <li class="nav-item">
-                        {% if user.is_superuser %}  
-                        <a class="nav-link btn btn-success" href=" post ">POST</a>  
-                    </li> {% endif%} 
-                    <li class="nav-item">  
-                    <a class="nav-link btn btn-danger" href="{% url 'logout' %}">Log Out</a>  
-                </li>  
-            </ul> 
-        </div>
-            </nav> 
-
-             
-                    
-            {% endif %} 
-
-            {%if not user.is_authenticated%}
-
-                    <nav class="navbar navbar-expand-lg navbar-light bg-primary">  
-                        <a class="navbar-brand" href="#">Hotel Habibi</a>  
-                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">  
-                            <span class="navbar-toggler-icon"></span>  
-                        </button> 
-                
-                        <div class="collapse navbar-collapse" id="navbarNav">  
-                
-                            <ul class="navbar-nav ml-auto"> 
-
-                                <li class="nav-item">  
-                                    <a class="nav-link" href="#menu">Menu</a>  
-                                </li>  
-                 
-                
-              
-                <li class="nav-item">  
-                    <a class="nav-link btn btn-success" href="{% url 'login' %}">Login</a>  
-                </li> 
-
-                <li class="nav-item">  
-                    <a class="nav-link btn btn-warning" href="{% url 'register' %}">Register</a>  
-                </li>  
-            </ul>  
-        </div> 
-            </nav>
-                     
-            {% endif %} 
-            
-        
-    
+ {% include 'navbar.html'%}
   
-
     <div class="hero">  
         <div class="hero-content">  
             <h1>Welcome to Hotel Habibi</h1>  
@@ -123,7 +52,7 @@
         <div class="row" id="menuItems">  
             <!-- Dynamic menu items will be inserted here -->  
             
-            {% for product in products %}
+            {% for product in products %}  
             <div class="col-md-4">
               <div class="card">
                 <img src="{{product.image.url}}" class="card-img-top" alt="veg-momo">
@@ -132,41 +61,54 @@
                   <p class="card-text">{{product.description}}</p>
                   <a  class="btn btn-primary">NPR.{{product.price}}</a>
                  {% if user.is_superuser %} <a href="/delete/{{product.id}}" class="btn btn-danger">Delete</a>{% endif %}
-                 {% if user.is_superuser %} <a href="/edit/{{product.id}}" class="btn btn-warning">Edit</a>{% endif %}
+                 {% if user.is_authenticated and postby=={{user.username}}%} <a href="/edit/{{product.id}}" class="btn btn-warning">Edit</a>{% endif %}
                   <small class='container '>Post At: {{product.date}}</small>
+                  <small class='container '>Post By: {{product.postby}}</small>
                 </div>
               </div>
             </div>
 
-            {% endfor %}
+          {% endfor %} 
             
+        </div>
 
         {% if user.is_authenticated %}
-
+        <div class="container mt-5">
         <h2 id="contact" class="text-center mt-5">Contact Us</h2>
-        {% for message in messages %}
-        <h5 class="text-danger">{{message}}</h5>
-      {% endfor %}
-
-      <div class="container">
-        <form action="{% url 'contact' %} " method="POST" class="php-email-form" >  
-            {% csrf_token %}  
-            <div class="col-12">  
-                    <input type="text" name="name" class="form-control" placeholder="Your Name" required>  
-                </div>  
-                <div class="col-12">  
-                    <input type="email" class="form-control" name="email" placeholder="Your Email" required>  
-                </div>  
-                <div class="col-12">  
-                    <input type="text" class="form-control" name="subject" placeholder="Subject" required>  
-                </div>  
-                <div class="col-12">  
-                    <textarea class="form-control" name="message" rows="6" placeholder="Message" required></textarea>  
-                </div >  
-                <div class="container d-flex justify-content-center" >
-                <button type="submit" class="btn btn-primary ">Send Message</button>  
-                </div>
-        </form>
+        <div class="d-flex flex-column align-items-center p-4">
+        <h4 class="text-xl font-bold mb-2">You Can Contact Us</h4>         
+        <p class="mb-4">We are open to solve your Queries</p>         
+        <form id="contactForm" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-100 max-w-lg border-gradient" action="{% url 'contact' %}"  method="POST" >  
+            {% csrf_token %} 
+            <div class="form-group mb-4">                 
+                {% comment %} <label for="name">Name <span class="text-danger">*</span></label>                  {% endcomment %}
+                <input type="hidden" id="name" name="username" value="{{user.username}}" class="form-control" required readonly>             
+            </div>             
+            <div class="form-group mb-4">                 
+                {% comment %} <label for="email">Email <span class="text-danger">*</span></label>                  {% endcomment %}
+                <input type="hidden" id="email" name="email"  class="form-control" value="{{user.email}}" required readonly>             
+            </div>             
+            <div class="form-group mb-4">                 
+                <label for="subject">Subject <span class="text-danger">*</span></label>                 
+                <input type="text" id="subject" name="subject" class="form-control" placeholder="Subject" required>             
+            </div>             
+            <div class="form-group mb-4">                 
+                <label for="message">Message <span class="text-danger">*</span></label>                 
+                <textarea id="message" name="message"  class="form-control" placeholder="Your Message" required></textarea>             
+            </div>             
+            <div class="d-flex justify-content-center">                 
+                <button type="submit" class="btn btn-primary">                     
+                    Send Message                 
+                </button>             
+            </div>         
+        </form>         
+        <div class="mt-6 text-center bg-light p-4 rounded shadow-md">             
+            <h5 class="font-semibold mb-2">Contact Details</h5>             
+            <p class="text-primary">Phone: +977 9845937335</p>             
+            <p class="text-primary">Email: avishekdhakal7@gmail.com</p>             
+            <p class="text-primary">Address: Bharatpur-22, Nepal (44200)</p>         
+        </div>     
+    </div> 
     </div> 
         {%endif %}
 
